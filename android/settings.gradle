@@ -1,0 +1,3 @@
+rootProject.name = 'paint_box_flutter'
+include(":nativebox")
+project(':nativebox').projectDir = file('modules/nativebox')
