@@ -21,7 +21,17 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: PaintBoxView()
+        body: Stack(
+  children: [
+    Positioned.fill(
+      child: PaintBoxView(), // Kotlin View
+    ),
+    Align(
+      alignment: Alignment.topRight,
+      child: ElevatedButton(onPressed: () {}, child: Text("ONPRESS")),     // Flutter widget
+    ),
+  ],
+)
       ),
     );
   }
