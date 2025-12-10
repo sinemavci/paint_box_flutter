@@ -13,6 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+ final paintEditor = PaintEditor();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,9 @@ class _MyAppState extends State<MyApp> {
     ),
     Align(
       alignment: Alignment.topRight,
-      child: ElevatedButton(onPressed: () {}, child: Text("ONPRESS")),     // Flutter widget
+      child: ElevatedButton(onPressed: () async {
+        await paintEditor.undo();
+      }, child: Text("UNDO")),     // Flutter widget
     ),
   ],
 )

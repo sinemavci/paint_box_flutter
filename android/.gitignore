@@ -7,3 +7,4 @@
 /build
 /captures
 .cxx
+/src/main/kotlin/com/example/paint_box_flutter/pigeons/PaintEditorModulePigeon.kt

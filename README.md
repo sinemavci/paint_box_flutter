@@ -13,3 +13,8 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+dart run pigeon \
+--input lib/common/paint_editor_host_api.dart \
+--dart_out lib/pigeon/paint_editor_host_api.g.dart \
+--kotlin_out android/src/main/kotlin/com/example/paint_box_flutter/pigeons/PaintEditorModulePigeon.kt \
+--kotlin_package "com.example.paint_box_flutter.PaintEditorModulePigeon"

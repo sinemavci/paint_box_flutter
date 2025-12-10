@@ -2,14 +2,18 @@ package com.example.paint_box_flutter
 
 import android.view.View
 import android.content.Context
+import com.example.paint_box_flutter.PaintEditorModulePigeon.PaintEditorHostApi
 import com.kotlin.native_drawing_plugin.PaintBoxView
+import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.platform.PlatformView
 
-class PaintBoxNativeView(context: Context) : PlatformView {
-    private var paintBoxNativeView: PaintBoxView? = PaintBoxView(context)
+class PaintBoxNativeView(context: Context, private val messenger: BinaryMessenger) : PlatformView {
+    private var paintEditorHostApi: PaintEditorHostApi? = null
+    var paintBoxNativeView: PaintBoxView? = PaintBoxView(context)
 
     init {
-          //todo setup host apis
+        paintEditorHostApi = PaintEditorController(this)
+        PaintEditorHostApi.setUp(messenger, paintEditorHostApi)
     }
 
     override fun getView(): View? {
@@ -18,7 +22,7 @@ class PaintBoxNativeView(context: Context) : PlatformView {
 
     override fun dispose() {
         paintBoxNativeView = null
-        //todo setup null host apis
+        PaintEditorHostApi.setUp(messenger, null)
     }
 
 }
