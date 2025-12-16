@@ -5,4 +5,7 @@ abstract class PaintEditorHostApi {
 
   @async
   bool undo();
+
+  @async
+  bool redo();
 }  

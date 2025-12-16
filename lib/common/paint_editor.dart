@@ -6,4 +6,8 @@ class PaintEditor {
   Future<void> undo() async {
     await _hostApi.undo();
   }
+
+  Future<void> redo() async {
+    await _hostApi.redo();
+  }
 }
