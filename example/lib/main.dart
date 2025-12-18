@@ -34,10 +34,16 @@ class _MyAppState extends State<MyApp> {
       }, child: Text("UNDO")),     // Flutter widget
     ),
     Align(
-      alignment: Alignment.topLeft,
+      alignment: Alignment.topCenter,
       child: ElevatedButton(onPressed: () async {
         await paintEditor.redo();
       }, child: Text("REDO")),     // Flutter widget
+    ),
+    Align(
+      alignment: Alignment.topLeft,
+      child: ElevatedButton(onPressed: () async {
+        await paintEditor.reset();
+      }, child: Text("RESET")),     // Flutter widget
     ),
   ],
 )

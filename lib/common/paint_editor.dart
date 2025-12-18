@@ -10,4 +10,8 @@ class PaintEditor {
   Future<void> redo() async {
     await _hostApi.redo();
   }
+
+  Future<void> reset() async {
+    await _hostApi.reset();
+  }
 }

@@ -8,4 +8,7 @@ abstract class PaintEditorHostApi {
 
   @async
   bool redo();
+
+  @async
+  bool reset();
 }  

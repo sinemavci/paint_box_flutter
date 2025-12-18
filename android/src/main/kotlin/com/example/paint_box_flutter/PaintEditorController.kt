@@ -20,4 +20,13 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
             callback.invoke(Result.failure(error))
         }
     }
+
+    override fun reset(callback: (Result<Boolean>) -> Unit) {
+        try {
+            paintBoxView.view?.paintEditor?.reset()
+            callback.invoke(Result.success(true))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
 }
