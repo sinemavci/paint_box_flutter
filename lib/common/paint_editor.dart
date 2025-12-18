@@ -14,4 +14,8 @@ class PaintEditor {
   Future<void> reset() async {
     await _hostApi.reset();
   }
+
+  Future<void> import(String bitmap) async {
+    await _hostApi.import(bitmap);
+  }
 }

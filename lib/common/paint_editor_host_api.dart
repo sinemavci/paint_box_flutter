@@ -11,4 +11,7 @@ abstract class PaintEditorHostApi {
 
   @async
   bool reset();
+
+  @async
+  bool import(String bitmap);
 }  

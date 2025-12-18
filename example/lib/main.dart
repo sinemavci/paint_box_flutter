@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:paint_box_flutter/paint_box_flutter_plugin.dart';
 
@@ -44,6 +48,19 @@ class _MyAppState extends State<MyApp> {
       child: ElevatedButton(onPressed: () async {
         await paintEditor.reset();
       }, child: Text("RESET")),     // Flutter widget
+    ),
+    Align(
+      alignment: Alignment.centerLeft,
+      child: ElevatedButton(onPressed: () async {
+        FilePickerResult? result = await FilePicker.platform.pickFiles();
+        if (result != null) {
+          File file = File(result.files.single.path!);
+          final bytes = await file.readAsBytes();
+          final base64Result = base64Encode(bytes);
+          await paintEditor.import(base64Result);
+          } else {
+      }
+      }, child: Text("IMPORT")),     // Flutter widget
     ),
   ],
 )

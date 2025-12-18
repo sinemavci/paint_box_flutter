@@ -1,5 +1,8 @@
 package com.example.paint_box_flutter
 
+import android.util.Base64
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.example.paint_box_flutter.PaintEditorModulePigeon.PaintEditorHostApi
 
 class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHostApi {
@@ -24,6 +27,21 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
     override fun reset(callback: (Result<Boolean>) -> Unit) {
         try {
             paintBoxView.view?.paintEditor?.reset()
+            callback.invoke(Result.success(true))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
+
+    override fun import(bitmap: String, callback: (Result<Boolean>) -> Unit) {
+        try {
+            val clean = bitmap
+            .replace("data:image/png;base64,", "")
+            .replace("data:image/jpeg;base64,", "")
+        val bytes = Base64.decode(clean, Base64.DEFAULT)
+        val _bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+            paintBoxView.view?.paintEditor?.import(_bitmap)
             callback.invoke(Result.success(true))
         } catch (error: Error) {
             callback.invoke(Result.failure(error))
