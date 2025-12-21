@@ -38,8 +38,8 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
             val clean = bitmap
             .replace("data:image/png;base64,", "")
             .replace("data:image/jpeg;base64,", "")
-        val bytes = Base64.decode(clean, Base64.DEFAULT)
-        val _bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val bytes = Base64.decode(clean, Base64.DEFAULT)
+            val _bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
             paintBoxView.view?.paintEditor?.import(_bitmap)
             callback.invoke(Result.success(true))

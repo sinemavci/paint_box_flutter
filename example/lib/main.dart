@@ -17,7 +17,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
- final paintEditor = PaintEditor();
+ final paintEditor1 = PaintEditor();
+ final paintEditor2 = PaintEditor();
 
   @override
   Widget build(BuildContext context) {
@@ -26,44 +27,94 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Stack(
-  children: [
-    Positioned.fill(
-      child: PaintBoxView(), // Kotlin View
-    ),
-    Align(
-      alignment: Alignment.topRight,
-      child: ElevatedButton(onPressed: () async {
-        await paintEditor.undo();
-      }, child: Text("UNDO")),     // Flutter widget
-    ),
-    Align(
-      alignment: Alignment.topCenter,
-      child: ElevatedButton(onPressed: () async {
-        await paintEditor.redo();
-      }, child: Text("REDO")),     // Flutter widget
-    ),
-    Align(
-      alignment: Alignment.topLeft,
-      child: ElevatedButton(onPressed: () async {
-        await paintEditor.reset();
-      }, child: Text("RESET")),     // Flutter widget
-    ),
-    Align(
-      alignment: Alignment.centerLeft,
-      child: ElevatedButton(onPressed: () async {
-        FilePickerResult? result = await FilePicker.platform.pickFiles();
-        if (result != null) {
-          File file = File(result.files.single.path!);
-          final bytes = await file.readAsBytes();
-          final base64Result = base64Encode(bytes);
-          await paintEditor.import(base64Result);
-          } else {
-      }
-      }, child: Text("IMPORT")),     // Flutter widget
-    ),
-  ],
-)
+        body: Column(
+          children: [
+            SizedBox(
+              height: 250,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: PaintBoxView(paintEditor: paintEditor1), // Kotlin View
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: ElevatedButton(onPressed: () async {
+              await paintEditor1.undo();
+                    }, child: Text("UNDO")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: ElevatedButton(onPressed: () async {
+              await paintEditor1.redo();
+                    }, child: Text("REDO")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: ElevatedButton(onPressed: () async {
+              await paintEditor1.reset();
+                    }, child: Text("RESET")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton(onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles();
+              if (result != null) {
+                File file = File(result.files.single.path!);
+                final bytes = await file.readAsBytes();
+                final base64Result = base64Encode(bytes);
+                await paintEditor1.import(base64Result);
+                } else {
+                    }
+                    }, child: Text("IMPORT")),     // Flutter widget
+                  ),
+                ],
+              ),
+            ),
+           Text("Second PaintBoxView"),
+            SizedBox(
+              height: 350,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: PaintBoxView(paintEditor: paintEditor2), // Kotlin View
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: ElevatedButton(onPressed: () async {
+              await paintEditor2.undo();
+                    }, child: Text("UNDO")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: ElevatedButton(onPressed: () async {
+              await paintEditor2.redo();
+                    }, child: Text("REDO")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: ElevatedButton(onPressed: () async {
+              await paintEditor2.reset();
+                    }, child: Text("RESET")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton(onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles();
+              if (result != null) {
+                File file = File(result.files.single.path!);
+                final bytes = await file.readAsBytes();
+                final base64Result = base64Encode(bytes);
+                await paintEditor2.import(base64Result);
+                } else {
+                    }
+                    }, child: Text("IMPORT")),     // Flutter widget
+                  ),
+                ],
+              ),
+            ),
+          
+          ],
+        )
       ),
     );
   }

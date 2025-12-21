@@ -13,6 +13,9 @@ class PaintBoxViewFactory(val messenger: BinaryMessenger) :
         viewId: Int,
         args: Any?
     ): PlatformView {
-        return PaintBoxNativeView(context!!, messenger)
+        val argsMap = args as Map<String, Any>
+        val channelSuffix: String = argsMap["channelSuffix"] as? String ?: ""
+
+        return PaintBoxNativeView(context!!, messenger, channelSuffix)
     }
 }

@@ -6,13 +6,13 @@ import com.kotlin.native_drawing_plugin.PaintBoxView
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.platform.PlatformView
 
-class PaintBoxNativeView(context: Context, private val messenger: BinaryMessenger) : PlatformView {
+class PaintBoxNativeView(context: Context, private val messenger: BinaryMessenger, private val channelSuffix: String) : PlatformView {
     private var paintEditorHostApi: PaintEditorHostApi? = null
     private var paintBoxNativeView: PaintBoxView? = PaintBoxView(context)
 
     init {
         paintEditorHostApi = PaintEditorController(this)
-        PaintEditorHostApi.setUp(messenger, paintEditorHostApi)
+        PaintEditorHostApi.setUp(messenger, paintEditorHostApi, channelSuffix)
     }
 
     override fun getView(): PaintBoxView? {
@@ -21,7 +21,8 @@ class PaintBoxNativeView(context: Context, private val messenger: BinaryMessenge
 
     override fun dispose() {
         paintBoxNativeView = null
-        PaintEditorHostApi.setUp(messenger, null)
+        paintEditorHostApi = null
+        PaintEditorHostApi.setUp(messenger, null, channelSuffix)
     }
 
 }
