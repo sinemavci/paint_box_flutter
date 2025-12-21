@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:paint_box_flutter/common/paint_box_reference.dart';
 import 'package:paint_box_flutter/common/paint_editor.dart';
+import 'package:uuid/uuid.dart';
 
 class PaintBoxView extends StatefulWidget {
   final PaintEditor paintEditor;
@@ -15,7 +16,7 @@ class PaintBoxView extends StatefulWidget {
 }
 
 class PaintBoxViewState extends State<PaintBoxView> {
-  final String suffix = Random().nextDouble().toString();
+  final String suffix = Uuid().v4();
   
   final String viewType = "paint_box_view";
 
