@@ -31,4 +31,18 @@ class PaintEditor {
     }
     await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).import(bitmap);
   }
+
+  Future<bool> isEnable() async {
+    if(channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
+    }
+    return await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).isEnable();
+  }
+
+  Future<void> setEnable(bool enable) async {
+    if(channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
+    }
+    await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).setEnable(enable);
+  }
 }

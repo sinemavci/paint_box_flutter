@@ -47,4 +47,22 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
             callback.invoke(Result.failure(error))
         }
     }
+
+    override fun isEnable(callback: (Result<Boolean>) -> Unit) {
+        try {
+            val isEnable = paintBoxView.view?.paintEditor?.isEnable()
+            callback.invoke(Result.success(isEnable ?: false))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
+
+    override fun setEnable(enable: Boolean, callback: (Result<Boolean>) -> Unit) {
+        try {
+            paintBoxView.view?.paintEditor?.setEnable(enable)
+            callback.invoke(Result.success(true))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
 }

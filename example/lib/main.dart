@@ -67,6 +67,13 @@ class _MyAppState extends State<MyApp> {
                     }
                     }, child: Text("IMPORT")),     // Flutter widget
                   ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(onPressed: () async {
+                final isEnable = await paintEditor1.isEnable();
+                await paintEditor1.setEnable(!isEnable);
+               }, child: Text("ENABLE")),     // Flutter widget
+                  ),
                 ],
               ),
             ),
@@ -108,6 +115,13 @@ class _MyAppState extends State<MyApp> {
                 } else {
                     }
                     }, child: Text("IMPORT")),     // Flutter widget
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(onPressed: () async {
+                final isEnable = await paintEditor2.isEnable();
+                await paintEditor2.setEnable(!isEnable);
+               }, child: Text("ENABLE")),     // Flutter widget
                   ),
                 ],
               ),
