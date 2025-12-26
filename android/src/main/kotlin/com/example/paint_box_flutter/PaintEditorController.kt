@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import com.example.paint_box_flutter.PaintEditorModulePigeon.PaintEditorHostApi
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.kotlin.native_drawing_plugin.MimeType
 
 class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHostApi {
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -52,7 +53,7 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
 
     override fun export(path: String, mimeType: String, fileName: String, callback: (Result<Boolean>) -> Unit) {
         try {
-        paintBoxView.view?.paintEditor?.export(path, mimeType, fileName)
+        paintBoxView.view?.paintEditor?.export(path, MimeType.fromValue(mimeType), fileName)
         callback.invoke(Result.success(true))
         } catch (error: Error) {
             callback.invoke(Result.failure(error))

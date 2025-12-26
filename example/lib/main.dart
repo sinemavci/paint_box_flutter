@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:paint_box_flutter/common/mime_type.dart';
 import 'package:paint_box_flutter/paint_box_flutter_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -80,7 +81,7 @@ class _MyAppState extends State<MyApp> {
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(onPressed: () async {
                       final path = await getDownloadsDirectory();
-                      await paintEditor1.export(path!.path, "png", "exported_image");
+                      await paintEditor1.export(path!.path, MimeType.jpeg, "exported_imageeee");
                }, child: Text("EXPORT")),     // Flutter widget
                   ),
                 ],
