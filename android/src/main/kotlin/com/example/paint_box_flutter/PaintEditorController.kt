@@ -1,11 +1,13 @@
 package com.example.paint_box_flutter
 
 import android.util.Base64
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.example.paint_box_flutter.PaintEditorModulePigeon.PaintEditorHostApi
+import android.os.Build
+import androidx.annotation.RequiresApi
 
 class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHostApi {
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun undo(callback: (Result<Boolean>) -> Unit) {
         try {
             paintBoxView.view?.paintEditor?.undo()
@@ -43,6 +45,15 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
 
             paintBoxView.view?.paintEditor?.import(_bitmap)
             callback.invoke(Result.success(true))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
+
+    override fun export(path: String, mimeType: String, fileName: String, callback: (Result<Boolean>) -> Unit) {
+        try {
+        paintBoxView.view?.paintEditor?.export(path, mimeType, fileName)
+        callback.invoke(Result.success(true))
         } catch (error: Error) {
             callback.invoke(Result.failure(error))
         }

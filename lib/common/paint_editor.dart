@@ -32,6 +32,14 @@ class PaintEditor {
     await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).import(bitmap);
   }
 
+
+  Future<bool> export(String path, String mimeType, String fileName) async {
+    if(channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
+    }
+    return await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).export(path, mimeType, fileName);
+  }
+
   Future<bool> isEnable() async {
     if(channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");

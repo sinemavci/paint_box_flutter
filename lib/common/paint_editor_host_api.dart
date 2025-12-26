@@ -16,6 +16,9 @@ abstract class PaintEditorHostApi {
   bool import(String bitmap);
 
   @async
+  bool export(String path, String mimeType, String fileName);
+
+  @async
   bool isEnable();
 
   @async
