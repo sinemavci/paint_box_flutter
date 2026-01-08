@@ -23,4 +23,10 @@ abstract class PaintEditorHostApi {
 
   @async
   bool setEnable(bool enable);
+
+  @async
+  bool setPaintMode(String paintMode);
+
+  @async
+  String getPaintMode();
 }  
