@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:paint_box_flutter/common/mime_type.dart';
+import 'package:paint_box_flutter/common/paint_mode.dart';
 import 'package:paint_box_flutter/paint_box_flutter_plugin.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,53 +24,82 @@ class _MyAppState extends State<MyApp> {
   final paintEditor1 = PaintEditor();
   final paintEditor2 = PaintEditor();
   File? file;
+  int selectedTool = 1;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Plugin example app')),
-        body: Column(
+        appBar: AppBar(title: const Text('Paint Box Flutter')),
+        body: Stack(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height - 16,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: PaintBoxView(
-                      paintEditor: paintEditor1,
-                    ), // Kotlin View
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await paintEditor1.undo();
-                      },
-                      child: Text("UNDO"),
-                    ), // Flutter widget
-                  ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await paintEditor1.redo();
-                      },
-                      child: Text("REDO"),
-                    ), // Flutter widget
-                  ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: ElevatedButton(
+            Positioned.fill(
+              child: PaintBoxView(paintEditor: paintEditor1), // Kotlin View
+            ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.withAlpha(50),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    IconButton(
                       onPressed: () async {
                         await paintEditor1.reset();
                       },
-                      child: Text("RESET"),
-                    ), // Flutter widget
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: ElevatedButton(
+                      icon: Icon(Icons.refresh),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await paintEditor1.undo();
+                      },
+                      icon: Icon(Icons.undo),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await paintEditor1.redo();
+                      },
+                      icon: Icon(Icons.redo),
+                    ),
+                    DropdownButton(
+                      items: [
+                        DropdownMenuItem(
+                          value: 1,
+                          onTap: () async {
+                            await paintEditor1.setEnable(true);
+                            await paintEditor1.setPaintMode(PaintMode.pen);
+                          },
+                          child: Icon(Icons.edit),
+                        ),
+                        DropdownMenuItem(
+                          value: 2,
+                          onTap: () async {
+                            await paintEditor1.setEnable(false);
+                          },
+                          child: Icon(Icons.edit_off),
+                        ),
+                        DropdownMenuItem(
+                          value: 3,
+                          onTap: () async {
+                            await paintEditor1.setEnable(true);
+                            await paintEditor1.setPaintMode(PaintMode.eraser);
+                          },
+                          child: Icon(MaterialCommunityIcons.eraser),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedTool = value!;
+                        });
+                      },
+                      value: selectedTool,
+                    ),
+
+                    IconButton(
                       onPressed: () async {
                         FilePickerResult? result = await FilePicker.platform
                             .pickFiles();
@@ -79,22 +110,9 @@ class _MyAppState extends State<MyApp> {
                           await paintEditor1.import(base64Result);
                         } else {}
                       },
-                      child: Text("IMPORT"),
-                    ), // Flutter widget
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final isEnable = await paintEditor1.isEnable();
-                        await paintEditor1.setEnable(!isEnable);
-                      },
-                      child: Text("ENABLE"),
-                    ), // Flutter widget
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
+                      icon: Icon(Icons.upload),
+                    ),
+                    IconButton(
                       onPressed: () async {
                         final path = await getDownloadsDirectory();
                         await paintEditor1.export(
@@ -103,63 +121,12 @@ class _MyAppState extends State<MyApp> {
                           "exported_imageeee",
                         );
                       },
-                      child: Text("EXPORT"),
-                    ), // Flutter widget
-                  ),
-                ],
+                      icon: Icon(Icons.save),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Text("Second PaintBoxView"),
-            if (file != null) ...[Image.file(file!)],
-
-            // SizedBox(
-            //   height: 350,
-            //   child: Stack(
-            //     children: [
-            //       Positioned.fill(
-            //         child: PaintBoxView(paintEditor: paintEditor2), // Kotlin View
-            //       ),
-            //       Align(
-            //         alignment: Alignment.topRight,
-            //         child: ElevatedButton(onPressed: () async {
-            //   await paintEditor2.undo();
-            //         }, child: Text("UNDO")),     // Flutter widget
-            //       ),
-            //       Align(
-            //         alignment: Alignment.topCenter,
-            //         child: ElevatedButton(onPressed: () async {
-            //   await paintEditor2.redo();
-            //         }, child: Text("REDO")),     // Flutter widget
-            //       ),
-            //       Align(
-            //         alignment: Alignment.topLeft,
-            //         child: ElevatedButton(onPressed: () async {
-            //   await paintEditor2.reset();
-            //         }, child: Text("RESET")),     // Flutter widget
-            //       ),
-            //       Align(
-            //         alignment: Alignment.centerLeft,
-            //         child: ElevatedButton(onPressed: () async {
-            //   FilePickerResult? result = await FilePicker.platform.pickFiles();
-            //   if (result != null) {
-            //     File file = File(result.files.single.path!);
-            //     final bytes = await file.readAsBytes();
-            //     final base64Result = base64Encode(bytes);
-            //     await paintEditor2.import(base64Result);
-            //     } else {
-            //         }
-            //         }, child: Text("IMPORT")),     // Flutter widget
-            //       ),
-            //       Align(
-            //         alignment: Alignment.center,
-            //         child: ElevatedButton(onPressed: () async {
-            //     final isEnable = await paintEditor2.isEnable();
-            //     await paintEditor2.setEnable(!isEnable);
-            //    }, child: Text("ENABLE")),     // Flutter widget
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),
