@@ -1,5 +1,8 @@
 enum PaintMode {
   pen('PEN'),
+  marker('MARKET'),
+  bucket('BUCKET'),
+  brush('BRUSH'),
   eraser('ERASER');
 
   final String value;

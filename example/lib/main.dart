@@ -24,7 +24,14 @@ class _MyAppState extends State<MyApp> {
   final paintEditor1 = PaintEditor();
   final paintEditor2 = PaintEditor();
   File? file;
-  int selectedTool = 1;
+  int selectedTool = PaintMode.pen.index;
+  Map<PaintMode, IconData> icons = {
+    PaintMode.pen: Icons.edit,
+    PaintMode.brush: MaterialCommunityIcons.brush,
+    PaintMode.eraser: MaterialCommunityIcons.eraser,
+    PaintMode.marker: MaterialCommunityIcons.format_paint,
+    PaintMode.bucket: MaterialCommunityIcons.format_color_fill,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -67,28 +74,22 @@ class _MyAppState extends State<MyApp> {
                     ),
                     DropdownButton(
                       items: [
-                        DropdownMenuItem(
-                          value: 1,
-                          onTap: () async {
-                            await paintEditor1.setEnable(true);
-                            await paintEditor1.setPaintMode(PaintMode.pen);
-                          },
-                          child: Icon(Icons.edit),
+                        ...PaintMode.values.map(
+                          (val) => DropdownMenuItem(
+                            value: val.index,
+                            onTap: () async {
+                              await paintEditor1.setEnable(true);
+                              await paintEditor1.setPaintMode(val);
+                            },
+                            child: Icon(icons[val]),
+                          ),
                         ),
                         DropdownMenuItem(
-                          value: 2,
+                          value: PaintMode.values.length + 1,
                           onTap: () async {
                             await paintEditor1.setEnable(false);
                           },
                           child: Icon(Icons.edit_off),
-                        ),
-                        DropdownMenuItem(
-                          value: 3,
-                          onTap: () async {
-                            await paintEditor1.setEnable(true);
-                            await paintEditor1.setPaintMode(PaintMode.eraser);
-                          },
-                          child: Icon(MaterialCommunityIcons.eraser),
                         ),
                       ],
                       onChanged: (value) {
