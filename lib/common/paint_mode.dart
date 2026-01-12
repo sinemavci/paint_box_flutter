@@ -1,6 +1,6 @@
 enum PaintMode {
   pen('PEN'),
-  marker('MARKET'),
+  marker('MARKER'),
   bucket('BUCKET'),
   brush('BRUSH'),
   eraser('ERASER');
