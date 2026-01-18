@@ -5,10 +5,13 @@ import android.graphics.BitmapFactory
 import com.example.paint_box_flutter.PaintEditorModulePigeon.PaintEditorHostApi
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.paint_box_flutter.dto.ColorDTO
 import com.kotlin.native_drawing_plugin.MimeType
 import com.kotlin.native_drawing_plugin.PaintMode
 
 class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHostApi {
+    val gson = JsonHandler.converter
+
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun undo(callback: (Result<Boolean>) -> Unit) {
         try {
@@ -93,6 +96,33 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
         try {
             val mode = paintBoxView.view?.paintEditor?.getPaintMode()
             callback.invoke(Result.success(mode?.name ?: PaintMode.PEN.name))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun getStrokeColor(callback: (Result<String>) -> Unit) {
+        try {
+            val strokeColor = paintBoxView.view?.paintEditor?.getStrokeColor()
+            var strokeColorDTO: ColorDTO?
+            if (strokeColor != null) {
+                strokeColorDTO = ColorDTO.fromDataModel(strokeColor)
+                callback.invoke(Result.success(gson.toJson(strokeColorDTO)))
+            } else {
+                callback.invoke(Result.failure(Exception("color not found")))
+            }
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun setStrokeColor(color: String, callback: (Result<Boolean>) -> Unit) {
+        try {
+            val color = gson.fromJson(color, ColorDTO::class.java).toDataModel()
+            paintBoxView.view?.paintEditor?.setStrokeColor(color)
+            callback.invoke(Result.success(true))
         } catch (error: Error) {
             callback.invoke(Result.failure(error))
         }

@@ -29,4 +29,10 @@ abstract class PaintEditorHostApi {
 
   @async
   String getPaintMode();
+
+  @async 
+  String getStrokeColor();
+
+  @async
+  bool setStrokeColor(String color);
 }  

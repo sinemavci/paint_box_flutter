@@ -1,74 +1,112 @@
+import 'dart:convert';
+
+import 'package:paint_box_flutter/common/color_dto.dart';
 import 'package:paint_box_flutter/common/mime_type.dart';
 import 'package:paint_box_flutter/common/paint_box_reference.dart';
 import 'package:paint_box_flutter/common/paint_mode.dart';
 import 'package:paint_box_flutter/pigeon/paint_editor_host_api.g.dart';
+import 'color.dart';
 
 class PaintEditor {
-  String? get channelSuffix => PaintBoxReference.instance.findPaintBoxReference(this)?.paintBoxView.suffix;
+  String? get channelSuffix => PaintBoxReference.instance
+      .findPaintBoxReference(this)
+      ?.paintBoxView
+      .suffix;
 
   Future<void> undo() async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
     await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).undo();
   }
 
   Future<void> redo() async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
     await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).redo();
   }
 
   Future<void> reset() async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
     await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).reset();
   }
 
   Future<void> import(String bitmap) async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
-    await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).import(bitmap);
+    await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).import(bitmap);
   }
 
-
   Future<bool> export(String path, MimeType mimeType, String fileName) async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
-    return await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).export(path, mimeType.value, fileName);
+    return await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).export(path, mimeType.value, fileName);
   }
 
   Future<bool> isEnable() async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
-    return await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).isEnable();
+    return await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).isEnable();
   }
 
   Future<void> setEnable(bool enable) async {
-    if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
-    await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).setEnable(enable);
+    await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).setEnable(enable);
   }
 
   Future<void> setPaintMode(PaintMode paintMode) async {
-     if(channelSuffix == null) {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
-    await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).setPaintMode(paintMode.value);
+    await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).setPaintMode(paintMode.value);
   }
 
-    Future<PaintMode> getPaintMode() async {
-     if(channelSuffix == null) {
+  Future<PaintMode> getPaintMode() async {
+    if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
-    final response = await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).getPaintMode();
+    final response = await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).getPaintMode();
     return PaintMode.fromValue(response);
+  }
+
+  Future<Color> getStrokeColor() async {
+    if (channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
     }
-  
+    final response = await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).getStrokeColor();
+    final dto = ColorDTO.fromJson(jsonDecode(response));
+    return dto.toDataModel();
+  }
+
+  Future<void> setStrokeColor(Color color) async {
+    if (channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
+    }
+    final dto = ColorDTO.fromDataModel(color);
+    await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).setStrokeColor(jsonEncode(dto.toJson()));
+  }
 }
