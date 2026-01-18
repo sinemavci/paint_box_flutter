@@ -28,6 +28,7 @@ class _MyAppState extends State<MyApp> {
   File? file;
   int selectedTool = PaintMode.pen.index;
   Color selectedColor = Colors.black;
+  double strokeSize = 12.0;
   Map<PaintMode, IconData> icons = {
     PaintMode.pen: Icons.edit,
     PaintMode.brush: MaterialCommunityIcons.brush,
@@ -35,6 +36,8 @@ class _MyAppState extends State<MyApp> {
     PaintMode.marker: MaterialCommunityIcons.format_paint,
     PaintMode.bucket: MaterialCommunityIcons.format_color_fill,
   };
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -46,6 +49,60 @@ class _MyAppState extends State<MyApp> {
     //     'stoke color: ${_strokeColor.green} ${_strokeColor.blue} ${_strokeColor.red}',
     //   );
     // });
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    super.dispose();
+  }
+
+  OverlayEntry _createOverlay() {
+    return OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                _overlayEntry?.remove();
+                _overlayEntry = null;
+              },
+              behavior: HitTestBehavior.translucent,
+              child: Container(),
+            ),
+          ),
+          Positioned(
+            width: 64,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: const Offset(0, 48), // butonun hemen altı
+              child: Material(
+                elevation: 6,
+                borderRadius: BorderRadius.circular(8),
+                child: RotatedBox(
+                  quarterTurns: -1,
+                  child: Slider(
+                    value: strokeSize,
+                    //value: await paintEditor1.getStrokeSize(),
+                    min: 1,
+                    max: 40,
+                    //   divisions: 99,
+                    label: 'Stroke Size',
+                    onChanged: (double value) async {
+                      await paintEditor1.setStrokeSize(value);
+                      setState(() {
+                        strokeSize = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -136,19 +193,17 @@ class _MyAppState extends State<MyApp> {
                                     ElevatedButton(
                                       child: const Text('Apply'),
                                       onPressed: () async {
-                                        try {
-                                          final color = paintboxcolor.Color(
-                                            red: selectedColor.r,
-                                            green: selectedColor.g,
-                                            blue: selectedColor.b,
-                                            alpha: selectedColor.a,
-                                          );
-                                          await paintEditor1.setStrokeColor(
-                                            color,
-                                          );
+                                        final color = paintboxcolor.Color(
+                                          red: selectedColor.r,
+                                          green: selectedColor.g,
+                                          blue: selectedColor.b,
+                                          alpha: selectedColor.a,
+                                        );
+                                        await paintEditor1.setStrokeColor(
+                                          color,
+                                        );
+                                        if (mounted) {
                                           Navigator.of(context).pop();
-                                        } catch (error) {
-                                          print('errror: ${error}');
                                         }
                                       },
                                     ),
@@ -161,6 +216,24 @@ class _MyAppState extends State<MyApp> {
                             Icons.circle,
                             color: selectedColor,
                           ), //todo: retrieve stroke color
+                        ),
+                        CompositedTransformTarget(
+                          link: _layerLink,
+                          child: IconButton(
+                            onPressed: () async {
+                              if (_overlayEntry == null) {
+                                _overlayEntry = _createOverlay();
+                                Overlay.of(context).insert(_overlayEntry!);
+                              } else {
+                                _overlayEntry!.remove();
+                                _overlayEntry = null;
+                              }
+                            },
+                            icon: Icon(
+                              Icons.line_weight,
+                              color: selectedColor,
+                            ), //todo: retrieve stroke color
+                          ),
                         ),
                         IconButton(
                           onPressed: () async {

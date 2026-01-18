@@ -35,4 +35,10 @@ abstract class PaintEditorHostApi {
 
   @async
   bool setStrokeColor(String color);
+
+  @async 
+  double getStrokeSize();
+
+  @async
+  bool setStrokeSize(double size);
 }  

@@ -109,4 +109,22 @@ class PaintEditor {
       messageChannelSuffix: channelSuffix!,
     ).setStrokeColor(jsonEncode(dto.toJson()));
   }
+
+  Future<double> getStrokeSize() async {
+    if (channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
+    }
+    return await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).getStrokeSize();
+  }
+
+  Future<void> setStrokeSize(double size) async {
+    if (channelSuffix == null) {
+      throw Exception("PaintBoxView not found for this PaintEditor");
+    }
+    await PaintEditorHostApi(
+      messageChannelSuffix: channelSuffix!,
+    ).setStrokeSize(size);
+  }
 }

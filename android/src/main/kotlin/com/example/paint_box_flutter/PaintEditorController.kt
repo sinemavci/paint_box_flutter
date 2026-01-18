@@ -127,4 +127,26 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
             callback.invoke(Result.failure(error))
         }
     }
+
+    override fun getStrokeSize(callback: (Result<Double>) -> Unit) {
+        try {
+            val strokeSize = paintBoxView.view?.paintEditor?.getStrokeWidth()
+            if (strokeSize != null) {
+                callback.invoke(Result.success(strokeSize))
+            } else {
+                callback.invoke(Result.failure(Exception("Stroke size not found")))
+            }
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
+
+    override fun setStrokeSize(size: Double, callback: (Result<Boolean>) -> Unit) {
+        try {
+            paintBoxView.view?.paintEditor?.setStrokeWidth(size)
+            callback.invoke(Result.success(true))
+        } catch (error: Error) {
+            callback.invoke(Result.failure(error))
+        }
+    }
 }
