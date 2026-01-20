@@ -82,7 +82,6 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
         }
     }
 
-    //todo here implements
     override fun setPaintMode(paintMode: String, callback: Function1<Result<Boolean>, Unit>) {
         try {
             paintBoxView.view?.paintEditor?.setPaintMode(PaintMode.valueOf(paintMode))

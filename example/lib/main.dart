@@ -27,8 +27,9 @@ class _MyAppState extends State<MyApp> {
   final paintEditor2 = PaintEditor();
   File? file;
   int selectedTool = PaintMode.pen.index;
-  Color selectedColor = Colors.black;
+  paintboxcolor.Color? selectedColor;
   double strokeSize = 12.0;
+  paintboxcolor.Color? strokeColor;
   Map<PaintMode, IconData> icons = {
     PaintMode.pen: Icons.edit,
     PaintMode.brush: MaterialCommunityIcons.brush,
@@ -38,18 +39,6 @@ class _MyAppState extends State<MyApp> {
   };
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
-
-  @override
-  void initState() {
-    super.initState();
-    //todo: view is ready support must be added
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   final _strokeColor = await paintEditor1.getStrokeColor();
-    //   print(
-    //     'stoke color: ${_strokeColor.green} ${_strokeColor.blue} ${_strokeColor.red}',
-    //   );
-    // });
-  }
 
   @override
   void dispose() {
@@ -84,10 +73,8 @@ class _MyAppState extends State<MyApp> {
                   quarterTurns: -1,
                   child: Slider(
                     value: strokeSize,
-                    //value: await paintEditor1.getStrokeSize(),
                     min: 1,
                     max: 40,
-                    //   divisions: 99,
                     label: 'Stroke Size',
                     onChanged: (double value) async {
                       await paintEditor1.setStrokeSize(value);
@@ -116,7 +103,17 @@ class _MyAppState extends State<MyApp> {
             body: Stack(
               children: [
                 Positioned.fill(
-                  child: PaintBoxView(paintEditor: paintEditor1), // Kotlin View
+                  child: PaintBoxView(
+                    paintEditor: paintEditor1,
+                    onPaintBoxViewReady: () async {
+                      final _strokeColor = await paintEditor1.getStrokeColor();
+                      final _strokeSize = await paintEditor1.getStrokeSize();
+                      setState(() {
+                        strokeSize = _strokeSize;
+                        strokeColor = _strokeColor;
+                      });
+                    },
+                  ),
                 ),
                 Align(
                   alignment: Alignment.topLeft,
@@ -183,9 +180,27 @@ class _MyAppState extends State<MyApp> {
                                   title: const Text('Pick a color!'),
                                   content: SingleChildScrollView(
                                     child: ColorPicker(
-                                      pickerColor: selectedColor,
+                                      pickerColor: selectedColor != null
+                                          ? Color.from(
+                                              alpha: selectedColor!.alpha!,
+                                              green: selectedColor!.green,
+                                              blue: selectedColor!.blue,
+                                              red: selectedColor!.red,
+                                            )
+                                          : Colors.black,
                                       onColorChanged: (color) {
-                                        setState(() => selectedColor = color);
+                                        final finalColor = paintboxcolor.Color(
+                                          red: color.r,
+                                          green: color.g,
+                                          blue: color.b,
+                                          alpha: color.a,
+                                        );
+                                        print(
+                                          'color changed: ${color.r} ${color.g} ${color.b} --- ${finalColor.red} ${finalColor.green} ${finalColor.blue}',
+                                        );
+                                        setState(
+                                          () => selectedColor = finalColor,
+                                        );
                                       },
                                     ),
                                   ),
@@ -193,17 +208,19 @@ class _MyAppState extends State<MyApp> {
                                     ElevatedButton(
                                       child: const Text('Apply'),
                                       onPressed: () async {
-                                        final color = paintboxcolor.Color(
-                                          red: selectedColor.r,
-                                          green: selectedColor.g,
-                                          blue: selectedColor.b,
-                                          alpha: selectedColor.a,
-                                        );
-                                        await paintEditor1.setStrokeColor(
-                                          color,
-                                        );
-                                        if (mounted) {
-                                          Navigator.of(context).pop();
+                                        if (selectedColor != null) {
+                                          await paintEditor1.setStrokeColor(
+                                            selectedColor!,
+                                          );
+                                          print(
+                                            "color final: ${selectedColor?.red} ${selectedColor?.green} ${selectedColor?.blue}",
+                                          );
+                                          setState(() {
+                                            strokeColor = selectedColor;
+                                          });
+                                          if (mounted) {
+                                            Navigator.of(context).pop();
+                                          }
                                         }
                                       },
                                     ),
@@ -214,8 +231,15 @@ class _MyAppState extends State<MyApp> {
                           },
                           icon: Icon(
                             Icons.circle,
-                            color: selectedColor,
-                          ), //todo: retrieve stroke color
+                            color: strokeColor != null
+                                ? Color.from(
+                                    alpha: strokeColor!.alpha!,
+                                    green: strokeColor!.green,
+                                    blue: strokeColor!.blue,
+                                    red: strokeColor!.red,
+                                  )
+                                : Colors.black,
+                          ),
                         ),
                         CompositedTransformTarget(
                           link: _layerLink,
@@ -231,7 +255,14 @@ class _MyAppState extends State<MyApp> {
                             },
                             icon: Icon(
                               Icons.line_weight,
-                              color: selectedColor,
+                              color: strokeColor != null
+                                  ? Color.from(
+                                      alpha: strokeColor!.alpha!,
+                                      green: strokeColor!.green,
+                                      blue: strokeColor!.blue,
+                                      red: strokeColor!.red,
+                                    )
+                                  : Colors.black,
                             ), //todo: retrieve stroke color
                           ),
                         ),
