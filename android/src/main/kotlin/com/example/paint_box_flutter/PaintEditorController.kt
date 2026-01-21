@@ -1,13 +1,17 @@
 package com.example.paint_box_flutter
 
+import android.graphics.Bitmap
 import android.util.Base64
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import com.example.paint_box_flutter.PaintEditorModulePigeon.PaintEditorHostApi
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.paint_box_flutter.dto.ColorDTO
 import com.kotlin.native_drawing_plugin.MimeType
 import com.kotlin.native_drawing_plugin.PaintMode
+import java.io.ByteArrayInputStream
 
 class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHostApi {
     val gson = JsonHandler.converter
@@ -43,12 +47,39 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
     override fun import(bitmap: String, callback: (Result<Boolean>) -> Unit) {
         try {
             val clean = bitmap
-            .replace("data:image/png;base64,", "")
-            .replace("data:image/jpeg;base64,", "")
+                .replace("data:image/png;base64,", "")
+                .replace("data:image/jpeg;base64,", "")
             val bytes = Base64.decode(clean, Base64.DEFAULT)
-            val _bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val originalBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
-            paintBoxView.view?.paintEditor?.import(_bitmap)
+            // 2) EXIF oku
+            val exif = ExifInterface(ByteArrayInputStream(bytes))
+            val orientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            // 3) Rotation hesapla
+            val matrix = Matrix()
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+                ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            }
+
+            val finalBitmap = Bitmap.createBitmap(
+                originalBitmap,
+                0,
+                0,
+                originalBitmap.width,
+                originalBitmap.height,
+                matrix,
+                true
+            )
+
+            paintBoxView.view?.paintEditor?.import(finalBitmap)
             callback.invoke(Result.success(true))
         } catch (error: Error) {
             callback.invoke(Result.failure(error))
