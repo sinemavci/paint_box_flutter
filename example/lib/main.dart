@@ -30,6 +30,7 @@ class _MyAppState extends State<MyApp> {
   paintboxcolor.Color? selectedColor;
   double strokeSize = 12.0;
   paintboxcolor.Color? strokeColor;
+  MimeType? selectedExportType;
   Map<PaintMode, IconData> icons = {
     PaintMode.pen: Icons.edit,
     PaintMode.brush: MaterialCommunityIcons.brush,
@@ -37,24 +38,29 @@ class _MyAppState extends State<MyApp> {
     PaintMode.marker: MaterialCommunityIcons.format_paint,
     PaintMode.bucket: MaterialCommunityIcons.format_color_fill,
   };
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntry;
+
+  final LayerLink _strokeSizeLink = LayerLink();
+  final LayerLink _exportLink = LayerLink();
+
+  OverlayEntry? _strokeSizeOverlayEntry;
+  OverlayEntry? _exportOverlayEntry;
 
   @override
   void dispose() {
-    _overlayEntry?.remove();
+    _strokeSizeOverlayEntry?.remove();
+    _exportOverlayEntry?.remove();
     super.dispose();
   }
 
-  OverlayEntry _createOverlay() {
+  OverlayEntry _createStrokeSizeOverlay() {
     return OverlayEntry(
       builder: (context) => Stack(
         children: [
           Positioned.fill(
             child: GestureDetector(
               onTap: () {
-                _overlayEntry?.remove();
-                _overlayEntry = null;
+                _strokeSizeOverlayEntry?.remove();
+                _strokeSizeOverlayEntry = null;
               },
               behavior: HitTestBehavior.translucent,
               child: Container(),
@@ -63,7 +69,7 @@ class _MyAppState extends State<MyApp> {
           Positioned(
             width: 64,
             child: CompositedTransformFollower(
-              link: _layerLink,
+              link: _strokeSizeLink,
               showWhenUnlinked: false,
               offset: const Offset(0, 48), // butonun hemen altı
               child: Material(
@@ -83,6 +89,94 @@ class _MyAppState extends State<MyApp> {
                       });
                     },
                   ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  OverlayEntry _createExportOverlay() {
+    return OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                _exportOverlayEntry?.remove();
+                _exportOverlayEntry = null;
+              },
+              behavior: HitTestBehavior.translucent,
+              child: Container(),
+            ),
+          ),
+          Positioned(
+            width: 64,
+            child: CompositedTransformFollower(
+              link: _exportLink,
+              showWhenUnlinked: false,
+              offset: const Offset(0, 48),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                child: Column(
+                  children: [
+                    ...MimeType.values.map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: SizedBox(
+                          height: 32,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: selectedExportType == item
+                                  ? Colors.blueGrey.shade400
+                                  : Colors.blueGrey.shade100,
+                            ),
+
+                            child: Text(
+                              item.value,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                            onPressed: () async {
+                              setState(() {
+                                selectedExportType = item;
+                              });
+                              try {
+                                final path = await getDownloadsDirectory();
+                                await paintEditor1.export(
+                                  path!.path,
+                                  item,
+                                  "exported_imageeee",
+                                );
+                                final snackBar = SnackBar(
+                                  content: Text("Exported to $path"),
+                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackBar);
+                              } catch (_) {
+                                final snackBar = SnackBar(
+                                  content: Text("Export failed"),
+                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackBar);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -195,9 +289,6 @@ class _MyAppState extends State<MyApp> {
                                           blue: color.b,
                                           alpha: color.a,
                                         );
-                                        print(
-                                          'color changed: ${color.r} ${color.g} ${color.b} --- ${finalColor.red} ${finalColor.green} ${finalColor.blue}',
-                                        );
                                         setState(
                                           () => selectedColor = finalColor,
                                         );
@@ -211,9 +302,6 @@ class _MyAppState extends State<MyApp> {
                                         if (selectedColor != null) {
                                           await paintEditor1.setStrokeColor(
                                             selectedColor!,
-                                          );
-                                          print(
-                                            "color final: ${selectedColor?.red} ${selectedColor?.green} ${selectedColor?.blue}",
                                           );
                                           setState(() {
                                             strokeColor = selectedColor;
@@ -242,15 +330,18 @@ class _MyAppState extends State<MyApp> {
                           ),
                         ),
                         CompositedTransformTarget(
-                          link: _layerLink,
+                          link: _strokeSizeLink,
                           child: IconButton(
                             onPressed: () async {
-                              if (_overlayEntry == null) {
-                                _overlayEntry = _createOverlay();
-                                Overlay.of(context).insert(_overlayEntry!);
+                              if (_strokeSizeOverlayEntry == null) {
+                                _strokeSizeOverlayEntry =
+                                    _createStrokeSizeOverlay();
+                                Overlay.of(
+                                  context,
+                                ).insert(_strokeSizeOverlayEntry!);
                               } else {
-                                _overlayEntry!.remove();
-                                _overlayEntry = null;
+                                _strokeSizeOverlayEntry!.remove();
+                                _strokeSizeOverlayEntry = null;
                               }
                             },
                             icon: Icon(
@@ -268,27 +359,50 @@ class _MyAppState extends State<MyApp> {
                         ),
                         IconButton(
                           onPressed: () async {
-                            FilePickerResult? result = await FilePicker.platform
-                                .pickFiles();
-                            if (result != null) {
-                              File file = File(result.files.single.path!);
-                              final bytes = await file.readAsBytes();
-                              final base64Result = base64Encode(bytes);
-                              await paintEditor1.import(base64Result);
-                            } else {}
+                            try {
+                              FilePickerResult? result = await FilePicker
+                                  .platform
+                                  .pickFiles();
+                              if (result != null) {
+                                File file = File(result.files.single.path!);
+                                final bytes = await file.readAsBytes();
+                                final base64Result = base64Encode(bytes);
+                                await paintEditor1.import(base64Result);
+                              } else {
+                                final snackBar = SnackBar(
+                                  content: Text("File can not selected"),
+                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackBar);
+                              }
+                            } catch (e) {
+                              final snackBar = SnackBar(
+                                content: Text("Import failed"),
+                              );
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(snackBar);
+                            }
                           },
                           icon: Icon(Icons.upload),
                         ),
-                        IconButton(
-                          onPressed: () async {
-                            final path = await getDownloadsDirectory();
-                            await paintEditor1.export(
-                              path!.path,
-                              MimeType.tif,
-                              "exported_imageeee",
-                            );
-                          },
-                          icon: Icon(Icons.save),
+                        CompositedTransformTarget(
+                          link: _exportLink,
+                          child: IconButton(
+                            onPressed: () async {
+                              if (_exportOverlayEntry == null) {
+                                _exportOverlayEntry = _createExportOverlay();
+                                Overlay.of(
+                                  context,
+                                ).insert(_exportOverlayEntry!);
+                              } else {
+                                _exportOverlayEntry!.remove();
+                                _exportOverlayEntry = null;
+                              }
+                            },
+                            icon: Icon(Icons.save),
+                          ),
                         ),
                       ],
                     ),
