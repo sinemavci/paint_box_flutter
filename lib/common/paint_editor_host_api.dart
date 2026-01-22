@@ -13,7 +13,7 @@ abstract class PaintEditorHostApi {
   bool reset();
 
   @async
-  bool import(String bitmap);
+  bool import(String path, double? width, double? height);
 
   @async
   bool export(String path, String mimeType, String fileName);

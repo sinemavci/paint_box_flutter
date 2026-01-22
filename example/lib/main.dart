@@ -364,10 +364,9 @@ class _MyAppState extends State<MyApp> {
                                   .platform
                                   .pickFiles();
                               if (result != null) {
-                                File file = File(result.files.single.path!);
-                                final bytes = await file.readAsBytes();
-                                final base64Result = base64Encode(bytes);
-                                await paintEditor1.import(base64Result);
+                                await paintEditor1.import(
+                                  path: result.files.single.path!,
+                                );
                               } else {
                                 final snackBar = SnackBar(
                                   content: Text("File can not selected"),

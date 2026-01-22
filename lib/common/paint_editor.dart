@@ -34,13 +34,13 @@ class PaintEditor {
     await PaintEditorHostApi(messageChannelSuffix: channelSuffix!).reset();
   }
 
-  Future<void> import(String bitmap) async {
+  Future<void> import({required String path, double? width, double? height}) async {
     if (channelSuffix == null) {
       throw Exception("PaintBoxView not found for this PaintEditor");
     }
     await PaintEditorHostApi(
       messageChannelSuffix: channelSuffix!,
-    ).import(bitmap);
+    ).import(path, width, height);
   }
 
   Future<bool> export(String path, MimeType mimeType, String fileName) async {

@@ -131,14 +131,14 @@ class PaintEditorHostApi {
     }
   }
 
-  Future<bool> import(String bitmap) async {
+  Future<bool> import(String path, double? width, double? height) async {
     final pigeonVar_channelName = 'dev.flutter.pigeon.paint_box_flutter.PaintEditorHostApi.import$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[bitmap]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[path, width, height]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);

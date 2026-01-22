@@ -44,42 +44,9 @@ class PaintEditorController(val paintBoxView: PaintBoxNativeView): PaintEditorHo
         }
     }
 
-    override fun import(bitmap: String, callback: (Result<Boolean>) -> Unit) {
+    override fun import(path: String, width: Double?, height: Double?, callback: (Result<Boolean>) -> Unit) {
         try {
-            val clean = bitmap
-                .replace("data:image/png;base64,", "")
-                .replace("data:image/jpeg;base64,", "")
-            val bytes = Base64.decode(clean, Base64.DEFAULT)
-            val originalBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
-            // 2) EXIF oku
-            val exif = ExifInterface(ByteArrayInputStream(bytes))
-            val orientation = exif.getAttributeInt(
-                ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_NORMAL
-            )
-
-            // 3) Rotation hesapla
-            val matrix = Matrix()
-            when (orientation) {
-                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
-                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
-                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
-                ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
-                ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
-            }
-
-            val finalBitmap = Bitmap.createBitmap(
-                originalBitmap,
-                0,
-                0,
-                originalBitmap.width,
-                originalBitmap.height,
-                matrix,
-                true
-            )
-
-            paintBoxView.view?.paintEditor?.import(finalBitmap)
+            paintBoxView.view?.paintEditor?.import(path, width, height)
             callback.invoke(Result.success(true))
         } catch (error: Error) {
             callback.invoke(Result.failure(error))
