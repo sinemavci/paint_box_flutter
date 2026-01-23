@@ -192,160 +192,120 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Builder(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Paint Box Flutter')),
-            body: Stack(
-              children: [
-                Positioned.fill(
-                  child: PaintBoxView(
-                    paintEditor: paintEditor1,
-                    onPaintBoxViewReady: () async {
-                      final _strokeColor = await paintEditor1.getStrokeColor();
-                      final _strokeSize = await paintEditor1.getStrokeSize();
-                      setState(() {
-                        strokeSize = _strokeSize;
-                        strokeColor = _strokeColor;
-                      });
-                    },
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey.withAlpha(50),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          onPressed: () async {
-                            await paintEditor1.reset();
-                          },
-                          icon: Icon(Icons.refresh),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            await paintEditor1.undo();
-                          },
-                          icon: Icon(Icons.undo),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            await paintEditor1.redo();
-                          },
-                          icon: Icon(Icons.redo),
-                        ),
-                        DropdownButton(
-                          items: [
-                            ...PaintMode.values.map(
-                              (val) => DropdownMenuItem(
-                                value: val.index,
-                                onTap: () async {
-                                  await paintEditor1.setEnable(true);
-                                  await paintEditor1.setPaintMode(val);
-                                },
-                                child: Icon(icons[val]),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: PaintMode.values.length + 1,
-                              onTap: () async {
-                                await paintEditor1.setEnable(false);
-                              },
-                              child: Icon(Icons.edit_off),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              selectedTool = value!;
-                            });
-                          },
-                          value: selectedTool,
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Pick a color!'),
-                                  content: SingleChildScrollView(
-                                    child: ColorPicker(
-                                      pickerColor: selectedColor != null
-                                          ? Color.from(
-                                              alpha: selectedColor!.alpha!,
-                                              green: selectedColor!.green,
-                                              blue: selectedColor!.blue,
-                                              red: selectedColor!.red,
-                                            )
-                                          : Colors.black,
-                                      onColorChanged: (color) {
-                                        final finalColor = paintboxcolor.Color(
-                                          red: color.r,
-                                          green: color.g,
-                                          blue: color.b,
-                                          alpha: color.a,
-                                        );
-                                        setState(
-                                          () => selectedColor = finalColor,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      child: const Text('Apply'),
-                                      onPressed: () async {
-                                        if (selectedColor != null) {
-                                          await paintEditor1.setStrokeColor(
-                                            selectedColor!,
-                                          );
-                                          setState(() {
-                                            strokeColor = selectedColor;
-                                          });
-                                          if (mounted) {
-                                            Navigator.of(context).pop();
-                                          }
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          icon: Icon(
-                            Icons.circle,
-                            color: strokeColor != null
-                                ? Color.from(
-                                    alpha: strokeColor!.alpha!,
-                                    green: strokeColor!.green,
-                                    blue: strokeColor!.blue,
-                                    red: strokeColor!.red,
-                                  )
-                                : Colors.black,
-                          ),
-                        ),
-                        CompositedTransformTarget(
-                          link: _strokeSizeLink,
-                          child: IconButton(
+          return SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: Column(
+                children: [
+                  Container(
+                   height: 64,
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey.withAlpha(50),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          IconButton(
                             onPressed: () async {
-                              if (_strokeSizeOverlayEntry == null) {
-                                _strokeSizeOverlayEntry =
-                                    _createStrokeSizeOverlay();
-                                Overlay.of(
-                                  context,
-                                ).insert(_strokeSizeOverlayEntry!);
-                              } else {
-                                _strokeSizeOverlayEntry!.remove();
-                                _strokeSizeOverlayEntry = null;
-                              }
+                              await paintEditor1.reset();
+                            },
+                            icon: Icon(Icons.refresh),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              await paintEditor1.undo();
+                            },
+                            icon: Icon(Icons.undo),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              await paintEditor1.redo();
+                            },
+                            icon: Icon(Icons.redo),
+                          ),
+                          DropdownButton(
+                            items: [
+                              ...PaintMode.values.map(
+                                (val) => DropdownMenuItem(
+                                  value: val.index,
+                                  onTap: () async {
+                                    await paintEditor1.setEnable(true);
+                                    await paintEditor1.setPaintMode(val);
+                                  },
+                                  child: Icon(icons[val]),
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: PaintMode.values.length + 1,
+                                onTap: () async {
+                                  await paintEditor1.setEnable(false);
+                                },
+                                child: Icon(Icons.edit_off),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                selectedTool = value!;
+                              });
+                            },
+                            value: selectedTool,
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Pick a color!'),
+                                    content: SingleChildScrollView(
+                                      child: ColorPicker(
+                                        pickerColor: selectedColor != null
+                                            ? Color.from(
+                                                alpha: selectedColor!.alpha!,
+                                                green: selectedColor!.green,
+                                                blue: selectedColor!.blue,
+                                                red: selectedColor!.red,
+                                              )
+                                            : Colors.black,
+                                        onColorChanged: (color) {
+                                          final finalColor = paintboxcolor.Color(
+                                            red: color.r,
+                                            green: color.g,
+                                            blue: color.b,
+                                            alpha: color.a,
+                                          );
+                                          setState(
+                                            () => selectedColor = finalColor,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      ElevatedButton(
+                                        child: const Text('Apply'),
+                                        onPressed: () async {
+                                          if (selectedColor != null) {
+                                            await paintEditor1.setStrokeColor(
+                                              selectedColor!,
+                                            );
+                                            setState(() {
+                                              strokeColor = selectedColor;
+                                            });
+                                            if (mounted) {
+                                              Navigator.of(context).pop();
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                             icon: Icon(
-                              Icons.line_weight,
+                              Icons.circle,
                               color: strokeColor != null
                                   ? Color.from(
                                       alpha: strokeColor!.alpha!,
@@ -354,60 +314,108 @@ class _MyAppState extends State<MyApp> {
                                       red: strokeColor!.red,
                                     )
                                   : Colors.black,
-                            ), //todo: retrieve stroke color
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            try {
-                              FilePickerResult? result = await FilePicker
-                                  .platform
-                                  .pickFiles();
-                              if (result != null) {
-                                await paintEditor1.import(
-                                  path: result.files.single.path!,
-                                );
-                              } else {
+                          CompositedTransformTarget(
+                            link: _strokeSizeLink,
+                            child: IconButton(
+                              onPressed: () async {
+                                if (_strokeSizeOverlayEntry == null) {
+                                  _strokeSizeOverlayEntry =
+                                      _createStrokeSizeOverlay();
+                                  Overlay.of(
+                                    context,
+                                  ).insert(_strokeSizeOverlayEntry!);
+                                } else {
+                                  _strokeSizeOverlayEntry!.remove();
+                                  _strokeSizeOverlayEntry = null;
+                                }
+                              },
+                              icon: Icon(
+                                Icons.line_weight,
+                                color: strokeColor != null
+                                    ? Color.from(
+                                        alpha: strokeColor!.alpha!,
+                                        green: strokeColor!.green,
+                                        blue: strokeColor!.blue,
+                                        red: strokeColor!.red,
+                                      )
+                                    : Colors.black,
+                              ), //todo: retrieve stroke color
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              try {
+                                FilePickerResult? result = await FilePicker
+                                    .platform
+                                    .pickFiles();
+                                if (result != null) {
+                                  await paintEditor1.import(
+                                    path: result.files.single.path!,
+                                  );
+                                } else {
+                                  final snackBar = SnackBar(
+                                    content: Text("File can not selected"),
+                                  );
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(snackBar);
+                                }
+                              } catch (e) {
                                 final snackBar = SnackBar(
-                                  content: Text("File can not selected"),
+                                  content: Text("Import failed"),
                                 );
                                 ScaffoldMessenger.of(
                                   context,
                                 ).showSnackBar(snackBar);
                               }
-                            } catch (e) {
-                              final snackBar = SnackBar(
-                                content: Text("Import failed"),
-                              );
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(snackBar);
-                            }
-                          },
-                          icon: Icon(Icons.upload),
-                        ),
-                        CompositedTransformTarget(
-                          link: _exportLink,
-                          child: IconButton(
-                            onPressed: () async {
-                              if (_exportOverlayEntry == null) {
-                                _exportOverlayEntry = _createExportOverlay();
-                                Overlay.of(
-                                  context,
-                                ).insert(_exportOverlayEntry!);
-                              } else {
-                                _exportOverlayEntry!.remove();
-                                _exportOverlayEntry = null;
-                              }
                             },
-                            icon: Icon(Icons.save),
+                            icon: Icon(Icons.upload),
+                          ),
+                          CompositedTransformTarget(
+                            link: _exportLink,
+                            child: IconButton(
+                              onPressed: () async {
+                                if (_exportOverlayEntry == null) {
+                                  _exportOverlayEntry = _createExportOverlay();
+                                  Overlay.of(
+                                    context,
+                                  ).insert(_exportOverlayEntry!);
+                                } else {
+                                  _exportOverlayEntry!.remove();
+                                  _exportOverlayEntry = null;
+                                }
+                              },
+                              icon: Icon(Icons.save),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: PaintBoxView(
+                            paintEditor: paintEditor1,
+                            onPaintBoxViewReady: () async {
+                              final _strokeColor = await paintEditor1
+                                  .getStrokeColor();
+                              final _strokeSize = await paintEditor1
+                                  .getStrokeSize();
+                              setState(() {
+                                strokeSize = _strokeSize;
+                                strokeColor = _strokeColor;
+                              });
+                            },
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
