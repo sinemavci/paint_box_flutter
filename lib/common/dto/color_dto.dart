@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'color.dart';
+import '../model/color.dart';
 
 part 'color_dto.freezed.dart';
 part 'color_dto.g.dart';

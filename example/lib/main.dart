@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:paint_box_flutter/common/color.dart' as paintboxcolor;
+import 'package:paint_box_flutter/common/model/color.dart' as paintboxcolor;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:paint_box_flutter/common/mime_type.dart';
-import 'package:paint_box_flutter/common/paint_mode.dart';
+import 'package:paint_box_flutter/common/model/mime_type.dart';
+import 'package:paint_box_flutter/common/model/paint_mode.dart';
 import 'package:paint_box_flutter/paint_box_flutter_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
