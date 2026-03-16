@@ -6,7 +6,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:replace="android:label">
+        android:allowBackup="false"
+        tools:replace="android:allowBackup,android:label">
         <activity
             android:name=".MainActivity"
             android:exported="true"

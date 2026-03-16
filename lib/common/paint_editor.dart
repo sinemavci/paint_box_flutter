@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:paint_box_flutter/common/color_dto.dart';
-import 'package:paint_box_flutter/common/mime_type.dart';
+import 'package:paint_box_flutter/common/dto/color_dto.dart';
+import 'package:paint_box_flutter/common/model/mime_type.dart';
 import 'package:paint_box_flutter/common/paint_box_reference.dart';
-import 'package:paint_box_flutter/common/paint_mode.dart';
+import 'package:paint_box_flutter/common/model/paint_mode.dart';
 import 'package:paint_box_flutter/pigeon/paint_editor_host_api.g.dart';
-import 'color.dart';
+import 'model/color.dart';
 
 class PaintEditor {
   String? get channelSuffix => PaintBoxReference.instance
