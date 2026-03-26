@@ -1,7 +1,7 @@
 # 🎨 paint_box_flutter
 
 <p align="center">
-  <img src="./assets/demo.gif" width="200" />
+ <img src="https://raw.githubusercontent.com/sinemavci/paint_box_flutter/main/assets/demo.gif" width="200"/>
 </p>
 
 paint_box_flutter is a lightweight drawing component for Flutter that allows users to draw on a canvas with customizable brush settings.
