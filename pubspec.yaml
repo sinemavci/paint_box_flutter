@@ -1,7 +1,9 @@
 name: paint_box_flutter
-description: "A new Flutter plugin project."
+description: "A lightweight drawing component for Flutter."
 version: 0.0.1
-homepage:
+homepage: https://github.com/sinemavci/paint_box_flutter
+repository: https://github.com/sinemavci/paint_box_flutter
+issue_tracker: https://github.com/sinemavci/paint_box_flutter/issues
 
 environment:
   sdk: ^3.9.2
@@ -15,6 +17,7 @@ dependencies:
   pigeon: ^26.1.4
   plugin_platform_interface: ^2.0.2
   uuid: ^4.5.2
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

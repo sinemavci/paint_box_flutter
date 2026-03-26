@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:paint_box_flutter/paint_box_view.dart';
 import 'package:paint_box_flutter/paint_box_flutter_plugin.dart';
 import 'package:collection/collection.dart';
 
